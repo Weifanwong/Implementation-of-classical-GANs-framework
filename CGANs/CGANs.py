@@ -30,12 +30,12 @@ img_transform = transforms.Compose([
 mnist = datasets.MNIST(root='./data/mnist/',train=True,transform=img_transform,download=True)
 dataloader = torch.utils.data.DataLoader(dataset=mnist,batch_size=batch_size,shuffle=True)
 
-check_point_dir = 'F:\\pytorch\\CGAN\\checkpoint\\'
+
 try:
+	check_point_dir = 'F:\\pytorch\\CGANs\\checkpoint\\'
 	checkpoint = torch.load(check_point_dir+'discriminator.pth')
 	Dis = Discriminator()
 	Dis.load_state_dict(checkpoint['model_state_dict'])
-
 	checkpoint = torch.load(check_point_dir+'generator.pth')	
 	Gen = Generator(input_dimension)
 	Gen.load_state_dict(checkpoint['model_state_dict'])
@@ -95,5 +95,15 @@ for epoch in range(start_epoch,num_epoch):
 			fake_img = to_img(fake_img.cpu().data)
 			save_image(fake_img,'./img/fake_images-{}.png'.format(epoch + 1))
 
-torch.save(Gen.state_dict(),'./generator.pth')
-torch.save(Dis.state_dict(),'./discriminator.pth')
+	torch.save({
+		'epoch':epoch,
+		'model_state_dict':Gen.state_dict(),
+		'optimizer_state_dict':G_optimizer.state_dict(),
+		},
+		'./checkpoint/generator.pth')
+	torch.save({
+		'epoch':epoch,
+		'model_state_dict':Dis.state_dict(),
+		'optimizer_state_dict':D_optimizer.state_dict(),
+		},
+		'./checkpoint/discriminator.pth')
